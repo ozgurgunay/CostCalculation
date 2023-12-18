@@ -1,0 +1,366 @@
+﻿@model CostCalculation.ViewModel.ProductIndexPageViewModel
+
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row align-items-center">
+        <div class="col-md-2">
+            <button class="btn btn-primary" style="font-family: Arial, sans-serif; font-size: 16px;" id="getCurrency" onclick="GetAndStoreCurrencyData()">Güncel Döviz Kuru</button>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body" style="font-family: Arial, sans-serif; font-size: 16px;" id="currencyInfo">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row align-items-start">
+        <div class="col-md-8">
+            <h1>Ürün Listesi</h1>
+            <table class="table table-bo">
+                <thead>
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th>Açıklama</th>
+                        <th>Kasa Net Kg</th>
+                        <th>Kasa Brüt Kg</th>
+                        <th>Palet Kutu Sayısı</th>
+                        <th>Palet</th>
+                        <th>Poşet Gr</th>
+                        <th>Fiyat</th>
+                        <th>Çıkma Oranı</th>
+                        <th>İşçi Maliyeti</th>
+                        <th>Eklenme Tarihi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Products != null)
+                    {
+                        @foreach (var item in Model.Products)
+                        {
+                            <tr>
+                                <td style="display: none;">@item.ProductId</td>
+                                <td>@item.ProductName</td>
+                                <td>@item.ProductDescription</td>
+                                <td>@item.BoxNetKg</td>
+                                <td>@item.BoxBrossKg</td>
+                                <td>@item.PalletBoxCount</td>
+                                <td>@item.Pallet</td>
+                                <td>@item.BagGr</td>
+                                <td>@item.Price</td>
+                                <td>@item.OutRate</td>
+                                <td>@item.LaborCost</td>
+                                <td>@item.CreatedDate.Date.ToString("dd.MM.yyyy")</td>
+                                <td><button type="button" onclick="ConfirmDelete(@item.ProductId)" class="btn btn-danger">Sil</button></td>
+                                <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#UpdateProductModal" onclick="GetProduct(@item.ProductId)">Güncelle</button></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>Ürün bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    @if (Model.FreightInfoList != null && Model.FreightInfoList.Any())
+                    {
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Navlun</th>
+                                    <th>Büyük Palet Navlun</th>
+                                    <th>Küçük Palet Navlun</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    @foreach (var item in Model.FreightInfoList)
+                                    {
+                                        <tr>
+                                            <td style="display: none;">@item.Id</td>
+                                            <td>@item.FreightValue</td>
+                                            <td>@Math.Round(item.FreightValue / item.BigPalletNumber, 2)</td>
+                                            <td>@Math.Round(item.FreightValue / item.SmallPalletNumber, 2)</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#UpdateFreightModal" onclick="GetFreight(@item.Id)">
+                                                    <span title="Güncelle" style="cursor: pointer;">✏️</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                            </tbody>
+                        </table>
+                    }
+                    @if (Model.FreightInfoList == null || !Model.FreightInfoList.Any())
+                    {
+                        <div class="text-right" style="margin-bottom: 20px;">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddFreightModal">Navlun Bilgisi Ekle</button>
+                        </div>                        
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-right" style="margin-bottom: 20px;">
+    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#AddProductModal">Ürün Ekle</button>
+</div>
+
+
+@* AddModal *@
+
+<div class="modal" id="AddProductModal" tabindex="-1" role="dialog" aria-labelledby="AddProductModalLabel" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Yeni Ürün Ekle</h4>
+                <div class="pull-right">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün Adı</label>
+                                <input type="text" id="AddProductName" class="form-control is-invalid" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün acıklaması</label>
+                                <input type="text" id="AddProductDescription" class="form-control is-invalid" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">kasa net agırlık</label>
+                                <input type="number" id="AddBoxNetKg" class="form-control is-invalid" required min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Kasa Brüt Kg</label>
+                                <input type="number" id="AddBoxBrossKg" class="form-control is-invalid" required min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">palet kutu sayısı</label>
+                                <input type="number" id="AddPalletBoxCount" class="form-control is-invalid" min="0" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">palet</label>
+                                <input type="number" id="AddPallet" class="form-control is-invalid" min="0" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">kasa ağırlığı</label>
+                                <input type="number" id="AddBagGr" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">ücret</label>
+                                <input type="number" id="AddPrice" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">çıkma oranı</label>
+                                <input type="number" id="AddOutRate" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">işçi maliyeti</label>
+                                <input type="number" id="AddLaborCost" class="form-control is-invalid" min="0" required step="0.01" />
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    <button class="btn btn-secondary" style="margin:15px;" data-dismiss="modal">Vazgeç</button>
+                    <button class="btn btn-primary" id="btnSave" onclick="AddProduct()" type="submit">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* UpdateModal *@
+
+<div class="modal" id="UpdateProductModal" tabindex="-1" role="dialog" aria-labelledby="UpdateProductModalLabel" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ürün Güncelleme</h4>
+                <div class="pull-right">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="row">
+                            <input style="display:none" id="UpdateProductId" />
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün Adı</label>
+                                <input type="text" id="UpdateProductName" class="form-control is-invalid" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün acıklaması</label>
+                                <input type="text" id="UpdateProductDescription" class="form-control is-invalid" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">kasa net agırlık</label>
+                                <input type="number" id="UpdateBoxNetKg" class="form-control is-invalid" min="0" required step="0.1" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Kasa Brüt Kg</label>
+                                <input type="number" id="UpdateBoxBrossKg" class="form-control is-invalid" min="0" required step="0.1" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">palet kutu sayısı</label>
+                                <input type="number" id="UpdatePalletBoxCount" class="form-control is-invalid" min="0" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">palet</label>
+                                <input type="number" id="UpdatePallet" class="form-control is-invalid" min="0" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">kasa ağırlığı</label>
+                                <input type="number" id="UpdateBagGr" class="form-control is-invalid" min="0" required step="0.1" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">ücret</label>
+                                <input type="number" id="UpdatePrice" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">çıkma oranı</label>
+                                <input type="number" id="UpdateOutRate" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">işçi maliyeti</label>
+                                <input type="number" id="UpdateLaborCost" class="form-control is-invalid" min="0" required step="0.01" />
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <div>
+                        <button class="btn btn-secondary" style="margin:15px;" data-dismiss="modal">Vazgeç</button>
+                        <button class="btn btn-primary" id="btnSave" onclick="UpdateProduct()" type="submit">Güncelle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* AddFreightModal *@
+
+<div class="modal" id="AddFreightModal" tabindex="-1" role="dialog" aria-labelledby="AddFreightModalLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Navlun Bilgisi Giriş</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addFreightForm">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Navlun</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="AddFreightValue" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Büyük Palet Sayısı</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="AddBigPalletNumber" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Küçük Palet Sayısı</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="AddSmallPalletNumber" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                <button class="btn btn-primary" id="btnSaveFreight" onclick="AddFreight()" type="submit">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* UpdateFreightModal *@
+
+<div class="modal" id="UpdateFreightModal" tabindex="-1" role="dialog" aria-labelledby="UpdateFreightModalLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Navlun Bilgisi Güncelle</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateFreightForm">
+                    <div class="form-group">
+                        <div class="row">
+                            <input style="display:none" id="UpdateFreightId" />
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Navlun</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="UpdateFreightValue" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Büyük Palet Sayısı</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="UpdateBigPalletNumber" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                            <div class="col-md-5" style="margin-bottom: 20px;">
+                                <label class="form-label">Küçük Palet Sayısı</label>
+                            </div>
+                            <div class="col-md-3" style="margin-bottom: 20px;">
+                                <input type="number" id="UpdateSmallPalletNumber" class="form-control is-invalid" min="0" step="0.1" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                <button class="btn btn-primary" id="btnUpdateFreight" onclick="UpdateFreight()" type="submit">Güncelle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/ProductJS.js"></script>
+

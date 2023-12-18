@@ -1,0 +1,178 @@
+﻿@using CostCalculation.ViewModel;
+
+@model List<PalletCalculateViewModel>
+
+
+<!DOCTYPE html>
+
+<div class="container mt-4">
+    <div class="row align-items-center">
+        <div class="col-md-2">
+            <button class="btn btn-primary" style="font-family: Arial, sans-serif; font-size: 16px;" id="getCurrency" onclick="GetAndStoreCurrencyData()">Güncel Döviz Kuru</button>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body" style="font-family: Arial, sans-serif; font-size: 16px;" id="currencyInfo">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<html>
+<head>
+    <title>Pallet Calculate Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 90%; /* Tabloyu ekranın %90'ına yerleştir */
+            margin-right: 50px; /* Tabloyu yatayda merkezlemek için */
+        }
+
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #00587a;
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>Palet Bazlı Hesaplama Sonuçları</h1>
+        <div class="table-responsive" style="width: 100%">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th>Açıklama</th>
+                        <th>Fiyat</th>
+                        <th>Çıkma Oranı</th>
+                        <th>Son Güncelleme Tarihi</th>
+                        <th>Kasa Sayısı</th>
+                        <th>Brüt Kg</th>
+                        <th>Palet Brüt Kg</th>
+                        <th>Net Kg</th>
+                        <th>Ürün Tutarı</th>
+                        <th>ikinci Kalite Fiyatı %30</th>
+                        <th>İkinci Kalite Zararı</th>
+                        <th>Ambalaj Maliyeti Toplam</th>
+                        <th>İşçilik Toplam</th>
+                        <th>Stopaj Tutarı</th>
+                        <th>Toplam Maliyet</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="display: none;">@item.ProductId</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.ProductDescription</td>
+                            <td>@item.Price</td>
+                            <td>@item.OutRate</td>
+                            <td>@item.UpdateDate</td>
+                            <td>@item.NumberOfBox</td>
+                            <td>@item.BrütKg</td>
+                            <td>@item.PaletBrütKg</td>
+                            <td>@item.NetKg</td>
+                            <td>@item.ProductPrice</td>
+                            <td>@item.SecondQualityPrice</td>
+                            <td>@item.SecondQualityCost</td>
+                            <td>@item.PackagingPriceTotal</td>
+                            <td>@item.LaborCost</td>
+                            <td>@item.StoppagejCost</td>
+                            <td>@item.TotalCost</td>
+                            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#UpdateProductPricesModal" onclick="GetProductPrice(@item.ProductId)">Güncelle</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</body>
+</html>
+
+@* UpdateProductPricesModal *@
+
+<div class="modal" id="UpdateProductPricesModal" tabindex="-1" role="dialog" aria-labelledby="UpdateProductPricesModalLabel" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Ürün Fiyatı ve Çıkma Oranı Güncelle</h4>
+                <div class="pull-right">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="row">
+                            <input style="display:none" id="UpdateProductPriceProductId" />
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün Adı</label>
+                                <input type="text" id="UpdateProductPriceProductName" class="form-control is-invalid" required readonly>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Ürün acıklaması</label>
+                                <input type="text" id="UpdateProductPriceDescription" class="form-control is-invalid" required readonly>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Ücret</label>
+                                <input type="number" id="UpdateProductPricePrice" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Çıkma Oranı</label>
+                                <input type="number" id="UpdateProductPriceOutRate" class="form-control is-invalid" min="0" required step="0.01" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <div>
+                        <button type="button" class="btn btn-primary" style="margin:15px;" data-dismiss="modal">Vazgeç</button>
+                        <button class="btn btn-primary" id="btnSave" onclick="UpdateProductPrices()" type="submit">Güncelle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/ProductJS.js"></script>

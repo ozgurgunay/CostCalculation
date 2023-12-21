@@ -1,4 +1,4 @@
-﻿@model CostCalculation.ViewModel.ProductIndexPageViewModel
+﻿@model CostCalculation.ViewModels.ProductIndexPageViewModel
 
 
 @{
@@ -12,7 +12,7 @@
             <button class="btn btn-primary" style="font-family: Arial, sans-serif; font-size: 16px;" id="getCurrency" onclick="GetAndStoreCurrencyData()">Güncel Döviz Kuru</button>
         </div>
         <div class="col-md-6">
-            <div class="card">
+            <div class="card" style="border: none;">
                 <div class="card-body" style="font-family: Arial, sans-serif; font-size: 16px;" id="currencyInfo">
                 </div>
             </div>
@@ -60,7 +60,7 @@
                                 <td>@item.LaborCost</td>
                                 <td>@item.CreatedDate.Date.ToString("dd.MM.yyyy")</td>
                                 <td><button type="button" onclick="ConfirmDelete(@item.ProductId)" class="btn btn-danger">Sil</button></td>
-                                <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#UpdateProductModal" onclick="GetProduct(@item.ProductId)">Güncelle</button></td>
+                                <td><button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#UpdateProductModal" onclick="GetProduct(@item.ProductId)">Güncelle</button></td>
                             </tr>
                         }
                     }
@@ -74,7 +74,7 @@
             </table>
         </div>
         <div class="col-md-4">
-            <div class="card">
+            <div class="card" style="border: none;">
                 <div class="card-body">
                     @if (Model.FreightInfoList != null && Model.FreightInfoList.Any())
                     {
@@ -88,20 +88,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    @foreach (var item in Model.FreightInfoList)
-                                    {
-                                        <tr>
-                                            <td style="display: none;">@item.Id</td>
-                                            <td>@item.FreightValue</td>
-                                            <td>@Math.Round(item.FreightValue / item.BigPalletNumber, 2)</td>
-                                            <td>@Math.Round(item.FreightValue / item.SmallPalletNumber, 2)</td>
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#UpdateFreightModal" onclick="GetFreight(@item.Id)">
-                                                    <span title="Güncelle" style="cursor: pointer;">✏️</span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    }
+                                @foreach (var item in Model.FreightInfoList)
+                                {
+                                    <tr>
+                                        <td style="display: none;">@item.Id</td>
+                                        <td>@item.FreightValue</td>
+                                        <td>@Math.Round(item.FreightValue / item.BigPalletNumber, 2)</td>
+                                        <td>@Math.Round(item.FreightValue / item.SmallPalletNumber, 2)</td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#UpdateFreightModal" onclick="GetFreight(@item.Id)">
+                                                <span title="Güncelle" style="cursor: pointer;">✏️</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     }
@@ -109,34 +109,28 @@
                     {
                         <div class="text-right" style="margin-bottom: 20px;">
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddFreightModal">Navlun Bilgisi Ekle</button>
-                        </div>                        
+                        </div>
                     }
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <div class="text-right" style="margin-bottom: 20px;">
-    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#AddProductModal">Ürün Ekle</button>
+    <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#AddProductModal">Ürün Ekle</button>
 </div>
 
 
 @* AddModal *@
 
-<div class="modal" id="AddProductModal" tabindex="-1" role="dialog" aria-labelledby="AddProductModalLabel" data-keyboard="true">
+<div class="modal" id="AddProductModal" tabindex="-1" role="dialog" aria-labelledby="AddProductModalLabel" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <div class="modal-header">
-                <h4 class="modal-title">Yeni Ürün Ekle</h4>
-                <div class="pull-right">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                <h5 class="modal-title">Yeni Ürün Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
             <div class="modal-body">
                 <form id="addProductForm">
                     <div class="form-group">
@@ -200,16 +194,12 @@
 
 @* UpdateModal *@
 
-<div class="modal" id="UpdateProductModal" tabindex="-1" role="dialog" aria-labelledby="UpdateProductModalLabel" data-keyboard="true">
+<div class="modal" id="UpdateProductModal" tabindex="-1" role="dialog" aria-labelledby="UpdateProductModalLabel" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Ürün Güncelleme</h4>
-                <div class="pull-right">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                <h5 class="modal-title">Ürün Güncelleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form>
@@ -273,14 +263,12 @@
 
 @* AddFreightModal *@
 
-<div class="modal" id="AddFreightModal" tabindex="-1" role="dialog" aria-labelledby="AddFreightModalLabel" aria-hidden="true" data-bs-backdrop="false">
+<div class="modal" id="AddFreightModal" tabindex="-1" role="dialog" aria-labelledby="AddFreightModalLabel" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Navlun Bilgisi Giriş</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">Navlun Bilgisi Giriş</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addFreightForm">
@@ -318,14 +306,12 @@
 
 @* UpdateFreightModal *@
 
-<div class="modal" id="UpdateFreightModal" tabindex="-1" role="dialog" aria-labelledby="UpdateFreightModalLabel" aria-hidden="true" data-bs-backdrop="false">
+<div class="modal" id="UpdateFreightModal" tabindex="-1" role="dialog" aria-labelledby="UpdateFreightModalLabel" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Navlun Bilgisi Güncelle</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">Navlun Bilgisi Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="updateFreightForm">

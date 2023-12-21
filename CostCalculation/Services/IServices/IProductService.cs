@@ -1,5 +1,5 @@
 ﻿using CostCalculation.DTOs;
-using CostCalculation.ViewModel;
+using CostCalculation.ViewModels;
 
 namespace CostCalculation.Services.IServices
 {

@@ -1,22 +1,16 @@
 ﻿using CostCalculation.Data;
 using CostCalculation.DTOs;
 using CostCalculation.Entities;
-using CostCalculation.Repositories;
 using CostCalculation.Repositories.Interfaces;
-using CostCalculation.Services;
 using CostCalculation.Services.IServices;
-using CostCalculation.ValidationRules;
-using CostCalculation.ViewModel;
-using FluentValidation;
+using CostCalculation.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using System.Net.Http;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace CostCalculation.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         #region Variables
@@ -39,7 +33,7 @@ namespace CostCalculation.Controllers
             _foreightRepository = foreightRepository;
         }
         #endregion
-
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Product>>> Index()
         {
             var products = await _productRepository.GetAllAsync();

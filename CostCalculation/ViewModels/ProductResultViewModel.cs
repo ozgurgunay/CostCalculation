@@ -1,4 +1,4 @@
-﻿namespace CostCalculation.ViewModel
+﻿namespace CostCalculation.ViewModels
 {
     public class ProductResultViewModel
     {

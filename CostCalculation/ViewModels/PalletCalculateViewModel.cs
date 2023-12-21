@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CostCalculation.ViewModel
+namespace CostCalculation.ViewModels
 {
     [Keyless]
     public class PalletCalculateViewModel

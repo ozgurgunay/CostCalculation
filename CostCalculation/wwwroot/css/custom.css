@@ -1,0 +1,8 @@
+﻿/* Navbar'ın seçili öğesi için arka plan rengi */
+.navbar-nav .nav-item .nav-link.active {
+    background-color: #343a40; /* Seçili bağlantının arka plan rengi */
+    border-radius: 5px; /* Seçili bağlantıya köşe yuvarlaklığı ekleme */
+    padding: 8px 15px; /* Seçili bağlantının iç boşluğu */
+}
+
+

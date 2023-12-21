@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
-
 });
+
 
 function ReloadPage() {
     window.location.reload();
@@ -320,31 +320,4 @@ function UpdateProductPrices() {
         alert("Lütfen gerekli tüm alanları doldurunuz.");
     }
 
-}
-function GetAndStoreCurrencyData() {
-    $.ajax({
-        url: '/Product/GetAndStoreCurrencyData',
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            const currencyInfoDiv = document.getElementById('currencyInfo');
-            currencyInfoDiv.innerHTML = `
-                <p class="card-text">${formatDate(data.date)} - ${data.currencyName} : ${formatNumber(data.banknoteSelling)} </p>
-            `;
-        },
-        error: function (error) {
-            console.error('Error:', error);
-        }
-    });
-}
-function formatDate(date) {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(date).toLocaleDateString('tr-TR', options);
-}
-function formatNumber(number) {
-    const formattedNumber = (number / 10000).toLocaleString('tr-TR', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4
-    });
-    return formattedNumber;
 }

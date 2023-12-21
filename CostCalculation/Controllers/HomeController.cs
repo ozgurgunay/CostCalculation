@@ -2,9 +2,11 @@
 using CostCalculation.Extensions;
 using CostCalculation.Services.IServices;
 using CostCalculation.ViewModels;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CostCalculation.Controllers
 {
@@ -15,23 +17,28 @@ namespace CostCalculation.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IEmailService _emailService;
+        private readonly ICurrencyService _currencyService;
         private readonly ILogger<HomeController> _logger;
         #endregion
 
         #region Constructor
-        public HomeController(IHttpClientFactory httpClientFactory, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService, ILogger<HomeController> logger)
+        public HomeController(IHttpClientFactory httpClientFactory, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService, ILogger<HomeController> logger, ICurrencyService currencyService)
         {
             _httpClientFactory = httpClientFactory;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _logger = logger;
+            _currencyService = currencyService;
         }
 
         #endregion
 
         public IActionResult Index()
         {
+            //hangfire for get currency every 55minutes
+            RecurringJob.AddOrUpdate("exchange-rate-job", () => _currencyService.StoreEuroCurrencyData(), "*/55 * * * *");
+            
             return View();
         }
         public IActionResult SignUp()
@@ -163,5 +170,15 @@ namespace CostCalculation.Controllers
 
             return View();
         }
+        public async Task<IActionResult> GetCurrencyData()
+        {
+            var currencyInfo = await _currencyService.GetCurrencyData();
+            if(currencyInfo == null)
+            {
+                return NotFound();
+            }
+            return Ok(currencyInfo);
+        }
+
     }
 }

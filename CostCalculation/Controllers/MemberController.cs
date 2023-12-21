@@ -11,17 +11,21 @@ namespace CostCalculation.Controllers
 {
     public class MemberController : Controller
     {
+        #region Variables
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMemberService _memberService;
         private string userName => User.Identity!.Name!;
-
+        #endregion
+        
+        #region Constructor
         public MemberController(IMemberService memberService, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _memberService = memberService;
             _userManager = userManager;
             _signInManager = signInManager;
         }
+        #endregion
         public async Task<IActionResult> Index()
         {
             return View(await _memberService.GetUserViewModelByUserName(userName));

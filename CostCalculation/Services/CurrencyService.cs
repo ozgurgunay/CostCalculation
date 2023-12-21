@@ -2,6 +2,7 @@
 using CostCalculation.Entities;
 using CostCalculation.Repositories.Interfaces;
 using CostCalculation.Services.IServices;
+using CostCalculation.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Globalization;
@@ -23,7 +24,7 @@ namespace CostCalculation.Services
             _exchangeRateRepository = exchangeRateRepository;
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<ExchangeCurrencyDTO> GetAndStoreEuroCurrencyData()
+        public async Task StoreEuroCurrencyData()
         {
             try
             {
@@ -34,15 +35,6 @@ namespace CostCalculation.Services
                 if (exchangeRate != null)
                 {
                     await _exchangeRateRepository.AddAsync(exchangeRate);
-                    var exchangeCurrencyDTO = new ExchangeCurrencyDTO
-                    {
-                        Date=exchangeRate.Date,
-                        CurrencyName = exchangeRate.CurrencyName,
-                        CurrencyCode = exchangeRate.CurrencyCode,
-                        BanknoteSelling = exchangeRate.BanknoteSelling
-                    };
-                    
-                    return exchangeCurrencyDTO;
                 }
                 else
                 {
@@ -54,6 +46,26 @@ namespace CostCalculation.Services
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<CurrencyViewModel> GetCurrencyData()
+        {
+            try
+            {
+                var lastExchangeRate = await _exchangeRateRepository.GetLastExchangeRate();
+
+                var currencyInfo = new CurrencyViewModel
+                {
+                    FormattedDate = lastExchangeRate?.Date.ToString(),
+                    CurrencyName = lastExchangeRate?.CurrencyName,
+                    FormattedBanknoteSelling = lastExchangeRate?.BanknoteSelling.ToString()
+                };
+
+                return currencyInfo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Döviz kuru alınamadı.", ex);
+            }
+        }
         private async Task<string> GetXmlDataAsync(string url)
         {
             using (HttpClient client = _httpClientFactory.CreateClient())
@@ -61,7 +73,7 @@ namespace CostCalculation.Services
                 return await client.GetStringAsync(url);
             }
         }
-        private ExchangeRate ProcessXmlData(string xmlData)
+        private ExchangeRate? ProcessXmlData(string xmlData)
         {
             XDocument doc = XDocument.Parse(xmlData);
 
@@ -71,7 +83,7 @@ namespace CostCalculation.Services
             {
                 return new ExchangeRate
                 {
-                    Date = DateTime.ParseExact(doc.Root?.Attribute("Tarih")?.Value, "dd.MM.yyyy", CultureInfo.InvariantCulture).Date,
+                    Date = DateTime.ParseExact(doc.Root.Attribute("Tarih").Value, "dd.MM.yyyy", CultureInfo.InvariantCulture).Date,
                     CrossOrder = Convert.ToInt16(euroCurrency.Attribute("CrossOrder")?.Value),
                     Kod = euroCurrency.Attribute("Kod")?.Value,
                     CurrencyCode = euroCurrency.Attribute("CurrencyCode")?.Value,
@@ -86,6 +98,7 @@ namespace CostCalculation.Services
             }
             return null;
         }
+        
 
     }
 }

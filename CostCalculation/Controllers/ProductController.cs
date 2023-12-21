@@ -18,18 +18,16 @@ namespace CostCalculation.Controllers
         private readonly IProductRepository _productRepository;
         private readonly IFreightRepository _foreightRepository;
         private readonly IProductService _productService;
-        private readonly ICurrencyService _currencyService;
         private readonly DbContextOptions<Context> _dbContextOptions;
 
         #endregion
 
         #region Constructor
-        public ProductController(IProductRepository productRepository, DbContextOptions<Context> dbContextOptions, IProductService productService, ICurrencyService currencyService, IFreightRepository foreightRepository)
+        public ProductController(IProductRepository productRepository, DbContextOptions<Context> dbContextOptions, IProductService productService, IFreightRepository foreightRepository)
         {
             _productRepository = productRepository;
             _dbContextOptions = dbContextOptions;
             _productService = productService;
-            _currencyService = currencyService;
             _foreightRepository = foreightRepository;
         }
         #endregion
@@ -45,7 +43,6 @@ namespace CostCalculation.Controllers
             };
             return View(productIndexPageViewModel);
         }
-
         [HttpPost]
         public async Task<IActionResult> ProductAdd([FromBody] ProductDTO productDTO)
         {
@@ -113,7 +110,6 @@ namespace CostCalculation.Controllers
                 return BadRequest(result);
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> DeleteProduct([FromBody] int id)
         {
@@ -144,7 +140,6 @@ namespace CostCalculation.Controllers
                 return NotFound();
             }
         }
-
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -154,7 +149,6 @@ namespace CostCalculation.Controllers
             }
             return Ok(product);
         }
-
         [HttpPost]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductDTO productDTO)
         {
@@ -228,7 +222,6 @@ namespace CostCalculation.Controllers
                 return BadRequest(result.ErrorMessages);
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> UpdateProductPrices([FromBody] UpdateProductPricesDTO updateProductPricesDTO)
         {
@@ -330,12 +323,6 @@ namespace CostCalculation.Controllers
             var exchangeCalculateQueries = new ExchangeCalculateQueries(_dbContextOptions);
             var result = exchangeCalculateQueries.GetExchangeCalculateResults();
             return View(result);
-        }
-        [HttpGet]
-        public async Task<ActionResult<string>> GetAndStoreCurrencyData()
-        {
-            var result = await _currencyService.GetAndStoreEuroCurrencyData();
-            return Ok(result);
         }
         [HttpPost]
         public async Task<IActionResult> AddFreight([FromBody]FreightDTO freightDTO)

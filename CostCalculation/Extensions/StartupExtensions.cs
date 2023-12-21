@@ -32,5 +32,6 @@ namespace CostCalculation.Extensions
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<Context>();
         }
+
     }
 }

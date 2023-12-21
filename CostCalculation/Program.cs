@@ -5,6 +5,7 @@ using CostCalculation.Repositories;
 using CostCalculation.Repositories.Interfaces;
 using CostCalculation.Services;
 using CostCalculation.Services.IServices;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -31,6 +32,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(
 builder.Configuration.GetConnectionString("ContentCreatorConnection")));
 
+//Hangfire for job
+builder.Services.AddHangfire(options => options
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("ContentCreatorConnection")));
+
+builder.Services.AddHangfireServer();
+
+
 //Send email
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
@@ -53,8 +64,8 @@ builder.Services.ConfigureApplicationCookie(opt =>
 });
 
 
-
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

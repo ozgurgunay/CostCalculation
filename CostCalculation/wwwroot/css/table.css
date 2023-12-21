@@ -1,0 +1,54 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* Sayfa arka plan rengi */
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+    margin-right: 50px;
+    background-color: #ffffff; /* Tablo arka plan rengi */
+}
+
+.table-container {
+    overflow: hidden; /* Taşma durumunda gizle */
+}
+
+    .table-container table {
+        width: 100%;
+    }
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Tek satırların arka plan rengi */
+}
+
+tr:nth-child(even) {
+    background-color: #ffffff; /* Çift satırların arka plan rengi (beyaz) */
+}
+
+th {
+    background-color: #4CAF50;
+    color: black;
+}
+
+button {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+    button:hover {
+        background-color: #00587a;
+    }

@@ -1,6 +1,6 @@
 ﻿using CostCalculation.DTOs;
 using CostCalculation.Entities;
-using CostCalculation.ViewModel;
+using CostCalculation.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
 namespace CostCalculation.Repositories.Interfaces

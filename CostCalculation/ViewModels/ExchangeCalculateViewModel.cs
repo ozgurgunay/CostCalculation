@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CostCalculation.ViewModel
+namespace CostCalculation.ViewModels
 {
     [Keyless]
     public class ExchangeCalculateViewModel

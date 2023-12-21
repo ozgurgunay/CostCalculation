@@ -1,7 +1,7 @@
 ﻿using CostCalculation.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CostCalculation.ViewModel
+namespace CostCalculation.ViewModels
 {
     public class ProductIndexPageViewModel
     {

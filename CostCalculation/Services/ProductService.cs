@@ -1,11 +1,10 @@
 ﻿using CostCalculation.Data;
 using CostCalculation.DTOs;
 using CostCalculation.Entities;
-using CostCalculation.Repositories;
 using CostCalculation.Repositories.Interfaces;
 using CostCalculation.Services.IServices;
 using CostCalculation.ValidationRules;
-using CostCalculation.ViewModel;
+using CostCalculation.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CostCalculation.Services
@@ -21,7 +20,6 @@ namespace CostCalculation.Services
             _productRepository = productRepository;
             _foreightRepository = foreightRepository;
         }
-
         public async Task<ResultViewModel> AddFreightAsync(FreightDTO freightDTO)
         {
             FreightValidation validationRules = new FreightValidation();
@@ -54,7 +52,6 @@ namespace CostCalculation.Services
             }
             return new ResultViewModel { IsSuccess = false };
         }
-
         public async Task<ProductResultViewModel> AddProductAsync(ProductDTO productDTO)
         {
             ProductValidation validations = new ProductValidation();
@@ -97,7 +94,6 @@ namespace CostCalculation.Services
 
             return new ProductResultViewModel { IsSuccess = false };
         }
-
         public async Task<bool> DeleteProductAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -109,7 +105,6 @@ namespace CostCalculation.Services
             await _productRepository.DeleteAsync(product);
             return true;
         }
-
         public async Task<ResultViewModel> UpdateFreightAsync(FreightDTO freightDTO)
         {
             FreightValidation validations = new FreightValidation();
@@ -147,7 +142,6 @@ namespace CostCalculation.Services
             }
             return new ResultViewModel { IsSuccess = false };
         }
-
         public async Task<ProductResultViewModel> UpdateProductAsync(ProductDTO productDTO)
         {
             ProductValidation validations = new ProductValidation();
@@ -195,7 +189,6 @@ namespace CostCalculation.Services
             }
             return new ProductResultViewModel { IsSuccess = false };
         }
-
         public async Task<ProductResultViewModel> UpdateProductPricesAsync(UpdateProductPricesDTO updateProductPricesDTO)
         {
             UpdateProductPricesValidation validations = new UpdateProductPricesValidation();

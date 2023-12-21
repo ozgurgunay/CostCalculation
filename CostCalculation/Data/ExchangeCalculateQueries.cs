@@ -1,4 +1,4 @@
-﻿using CostCalculation.ViewModel;
+﻿using CostCalculation.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CostCalculation.Data

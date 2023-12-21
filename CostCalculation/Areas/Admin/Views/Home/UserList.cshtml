@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "UserList";
+}
+@model List<AdminModel.UserViewModel>
+
+
+<div class="container mt-4">
+    <div class="row align-items-start">
+        <div class="col-md-8">
+            <h3>Kullanıcı Listesi</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı Adı</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="display: none;">@item.Id</td>
+                            <td>@item.Name</td>
+                            <td>@item.Email</td>
+                            <td>
+                                <user-role-names user-id="@item.Id"></user-role-names>  @*user-role-names in-> UserRoleNamesTagHelper *@
+                            </td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" asp-controller="Role" asp-action="AssignRoleToUser" asp-route-id="@item.Id">Rol Ata</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -3,7 +3,7 @@ using CostCalculation.DTOs;
 using CostCalculation.Entities;
 using CostCalculation.Repositories.Interfaces;
 using CostCalculation.ValidationRules;
-using CostCalculation.ViewModel;
+using CostCalculation.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
 namespace CostCalculation.Repositories

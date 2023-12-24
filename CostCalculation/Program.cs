@@ -1,3 +1,5 @@
+using CostCalculation.Areas.Admin.Services;
+using CostCalculation.Areas.Admin.Services.IServices;
 using CostCalculation.Data;
 using CostCalculation.Extensions;
 using CostCalculation.OptionsModel;
@@ -12,6 +14,10 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+//Send email
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 //Project Dependencies
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IFreightRepository, FreightRepository>();
@@ -22,6 +28,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserService, UserService>();
 //IHttpContextAccessor 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
@@ -41,9 +48,6 @@ builder.Services.AddHangfire(options => options
 
 builder.Services.AddHangfireServer();
 
-
-//Send email
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 //Add picture and File 
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));

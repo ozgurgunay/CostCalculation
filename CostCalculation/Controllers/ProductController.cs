@@ -43,6 +43,7 @@ namespace CostCalculation.Controllers
             };
             return View(productIndexPageViewModel);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> ProductAdd([FromBody] ProductDTO productDTO)
         {
@@ -110,6 +111,7 @@ namespace CostCalculation.Controllers
                 return BadRequest(result);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteProduct([FromBody] int id)
         {
@@ -149,6 +151,7 @@ namespace CostCalculation.Controllers
             }
             return Ok(product);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductDTO productDTO)
         {
@@ -324,6 +327,7 @@ namespace CostCalculation.Controllers
             var result = exchangeCalculateQueries.GetExchangeCalculateResults();
             return View(result);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddFreight([FromBody]FreightDTO freightDTO)
         {
@@ -337,6 +341,7 @@ namespace CostCalculation.Controllers
                 return BadRequest(result);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateFreight([FromBody]FreightDTO freightDTO)
         {

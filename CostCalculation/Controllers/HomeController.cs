@@ -3,13 +3,14 @@ using CostCalculation.Extensions;
 using CostCalculation.Services.IServices;
 using CostCalculation.ViewModels;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CostCalculation.Controllers
-{
+{    
     public class HomeController : Controller
     {
         #region Variables
@@ -43,6 +44,10 @@ namespace CostCalculation.Controllers
         }
         public IActionResult SignUp()
         {
+            if (User.Identity!.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
         [HttpPost]
@@ -57,7 +62,8 @@ namespace CostCalculation.Controllers
             {
                 UserName = request.UserName,
                 PhoneNumber = request.PhoneNumber,
-                Email = request.Email
+                Email = request.Email,
+                IsApproved = false
             }, request.PasswordConfirm);
 
             if (!identityResult.Succeeded)
@@ -66,11 +72,15 @@ namespace CostCalculation.Controllers
                 return View();
             }
 
-            TempData["SuccessMessage"] = "Kayıt başarılı.";
+            TempData["SuccessMessage"] = "Kayıt başarılı. Hesabınıza giriş yapabilmek için aktivasyon mailinin gelmesini bekleyiniz.";
             return RedirectToAction(nameof(HomeController.SignUp));
         }
         public IActionResult SignIn()
         {
+            if (User.Identity!.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
         [HttpPost]
@@ -88,6 +98,11 @@ namespace CostCalculation.Controllers
             if (hasUser == null)
             {
                 ModelState.AddModelError(string.Empty, "E-Mail veya şifreniz yanlış!");
+                return View();
+            }
+            if (!hasUser.IsApproved)
+            {
+                ModelState.AddModelError(string.Empty, "Hesabınız yöneticiniz tarafından henüz onaylanmamıştır!");
                 return View();
             }
             var signInResult = await _signInManager.PasswordSignInAsync(hasUser, request.Password, request.RememberMe, false);
@@ -161,6 +176,7 @@ namespace CostCalculation.Controllers
             var result = await _userManager.ResetPasswordAsync(hasUser, token.ToString()!, request.Password);
             if (result.Succeeded)
             {
+                await _emailService.SendPasswordUpdatedEmail(hasUser.Email);
                 TempData["SuccessMessage"] = "Şifreniz sıfırlanmıştır.";
             }
             else

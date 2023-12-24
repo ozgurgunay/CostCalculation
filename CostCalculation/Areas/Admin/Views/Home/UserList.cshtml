@@ -2,7 +2,9 @@
     ViewData["Title"] = "UserList";
 }
 @model List<AdminModel.UserViewModel>
-
+<head>
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+</head>
 
 <div class="container mt-4">
     <div class="row align-items-start">
@@ -15,6 +17,7 @@
                         <th>Email</th>
                         <th>Rol</th>
                         <th>İşlemler</th>
+                        <th class="text-center">Kullanıcı Aktivasyonu</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,6 +33,9 @@
                             <td>
                                 <a class="btn btn-primary btn-sm" asp-controller="Role" asp-action="AssignRoleToUser" asp-route-id="@item.Id">Rol Ata</a>
                             </td>
+                            <td class="text-center">
+                                <input type="checkbox" asp-for="@item.IsApproved" class="custom-checkbox" id="IsApproved_@item.Id" onchange="onCheckboxChange('@item.Id')" />
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -37,3 +43,6 @@
         </div>
     </div>
 </div>
+
+
+<script src="~/js/Admin.js"></script>

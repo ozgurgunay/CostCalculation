@@ -8,5 +8,6 @@ namespace CostCalculation.Data
         public string? Picture { get; set; }
         public DateTime? BirthDate { get; set; }
         public EGender? Gender { get; set; }
+        public bool IsApproved { get; set; }
     }
 }
